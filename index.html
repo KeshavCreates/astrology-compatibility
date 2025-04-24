@@ -897,7 +897,7 @@ function calculateCompatibility() {
 }
 
 // Generate detailed compatibility report
-function generateCompatibilityReport(sign1, sign2) {
+function generateCompatibilityReport(sign1, sign2, name1, name2) {
     const zodiac1 = zodiacData[sign1];
     const zodiac2 = zodiacData[sign2];
     const element1 = zodiac1.element;
@@ -909,15 +909,15 @@ function generateCompatibilityReport(sign1, sign2) {
     
     let overallAnalysis;
     if (score >= 90) {
-        overallAnalysis = `An extraordinary cosmic connection! ${sign1} and ${sign2} naturally complement each other in many ways, creating a vibrant and fulfilling partnership.`;
+        overallAnalysis = `An extraordinary cosmic connection! ${name1} and ${name2} naturally complement each other in many ways, creating a vibrant and fulfilling partnership.`;
     } else if (score >= 75) {
-        overallAnalysis = `A strong compatibility with great potential! ${sign1} and ${sign2} share a natural harmony that can lead to a lasting and joyful relationship.`;
+        overallAnalysis = `A strong compatibility with great potential! ${name1} and ${name2} share a natural harmony that can lead to a lasting and joyful relationship.`;
     } else if (score >= 60) {
-        overallAnalysis = `A moderate compatibility with promise. ${sign1} and ${sign2} have differences that can enrich your bond with effort and understanding.`;
+        overallAnalysis = `A moderate compatibility with promise. ${name1} and ${name2} have differences that can enrich your bond with effort and understanding.`;
     } else if (score >= 40) {
-        overallAnalysis = `${sign1} and ${sign2} face some challenges. Your unique traits require work to align, but this can lead to growth and balance.`;
+        overallAnalysis = `${name1} and ${name2} face some challenges. Your unique traits require work to align, but this can lead to growth and balance.`;
     } else {
-        overallAnalysis = `A complex pairing for ${sign1} and ${sign2}. Significant effort and compromise can turn your differences into strengths.`;
+        overallAnalysis = `A complex pairing for ${name1} and ${name2}. Significant effort and compromise can turn your differences into strengths.`;
     }
     
     const elementKey = element1 === element2 ? `${element1}-${element2}` : [element1, element2].sort().join("-");
@@ -985,7 +985,7 @@ document.getElementById('compatibilityForm').addEventListener('submit', async fu
         const zodiac1 = getZodiacSign(date1);
         const zodiac2 = getZodiacSign(date2);
         
-        const report = generateCompatibilityReport(zodiac1.sign, zodiac2.sign);
+        const report = generateCompatibilityReport(zodiac1.sign, zodiac2.sign, name1, name2);
         
         // Update Person 1 Profile
         document.getElementById('name1Display').textContent = name1;
