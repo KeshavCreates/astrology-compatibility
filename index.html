@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astrology Compatibility Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #2c003e, #000);
+            color: #fff;
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: #2c003e;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+
+        p.intro {
+            text-align: center;
+            padding: 10px 20px;
+            font-style: italic;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(58, 0, 77, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        label {
+            margin-top: 15px;
+            font-size: 1.1em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            margin: 5px 0;
+            padding: 12px;
+            width: 100%;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            background: #3a004d;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #ffd700;
+            outline: none;
+            box-shadow: 0 0 8px rgba(255,215,0,0.5);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            background-color: #ffd700;
+            color: #2c003e;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            min-width: 120px;
+        }
+
+        #resetBtn {
+            background-color: transparent;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+        }
+
+        button:hover {
+            background-color: #e6c200;
+            transform: scale(1.05);
+        }
+
+        #resetBtn:hover {
+            background-color: rgba(255,215,0,0.2);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+        }
+
+        .spinner {
+            display: inline-block;
+            margin-right: 10px;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        #error {
+            text-align: center;
+            padding: 10px;
+            color: #ff6b6b;
+            background: rgba(255,107,107,0.1);
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        #results {
+            display: none;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 30px auto 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s, transform 0.8s;
+        }
+
+        #results.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .profile, #compatibility {
+            background: rgba(58, 0, 77, 0.8);
+            padding: 25px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+        }
+
+        .profile:hover, #compatibility:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .zodiac-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,215,0,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: #ffd700;
+        }
+
+        .trait-list {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .trait-list li {
+            margin: 8px 0;
+            position: relative;
+        }
+
+        .trait-list li::before {
+            content: "✦";
+            position: absolute;
+            left: -20px;
+            color: #ffd700;
+        }
+
+        #score {
+            font-size: 2em;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255,215,0,0.3);
+            display: block;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #overallAnalysis {
+            line-height: 1.6;
+            font-size: 1.1em;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .tips-list {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 8px;
+        }
+
+        .tips-list li {
+            margin: 10px 0;
+        }
+
+        .section-title {
+            border-bottom: 1px solid rgba(255,215,0,0.3);
+            padding-bottom: 8px;
+            margin-top: 25px;
+            color: #ffd700;
+        }
+
+        .print-button {
+            display: block;
+            margin: 30px auto 0;
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .print-button:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.05);
+        }
+
+        @media (min-width: 768px) {
+            #results-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            #compatibility {
+                grid-column: 1 / 3;
+                margin-top: 10px;
+            }
+            form {
+                max-width: 600px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .buttons {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+            .profile, #compatibility {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        .element-icon {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .fire {
+            background-color: rgba(255, 69, 0, 0.2);
+            color: #ff6b6b;
+        }
+
+        .earth {
+            background-color: rgba(139, 69, 19, 0.2);
+            color: #8bc34a;
+        }
+
+        .air {
+            background-color: rgba(135, 206, 250, 0.2);
+            color: #87cefa;
+        }
+
+        .water {
+            background-color: rgba(0, 191, 255, 0.2);
+            color: #00bfff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Astrology Compatibility Analysis</h1>
+    </header>
+    <div class="container">
+        <p class="intro">Discover the cosmic connection between you and your partner with our detailed astrological compatibility analysis. Enter your birth details below to reveal insights about your relationship dynamics.</p>
+        
+        <form id="compatibilityForm">
+            <div class="form-group">
+                <label for="name1">Your Name:</label>
+                <input type="text" id="name1" required placeholder="Enter your name">
+            </div>
+            
+            <div class="form-group">
+                <label for="date1">Your Birth Date:</label>
+                <input type="date" id="date1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="name2">Partner's Name:</label>
+                <input type="text" id="name2" required placeholder="Enter your partner's name">
+            </div>
+            
+            <div class="form-group">
+                <label for="date2">Partner's Birth Date:</label>
+                <input type="date" id="date2" required>
+            </div>
+            
+            <div class="buttons">
+                <button type="submit" id="analyzeBtn">Generate Analysis</button>
+                <button type="button" id="resetBtn">Reset</button>
+            </div>
+        </form>
+        
+        <div id="loading" style="display: none;">
+            <span class="spinner"><i class="fas fa-star fa-spin"></i></span>
+            Consulting the stars...
+        </div>
+        
+        <div id="error"></div>
+        
+        <section id="results">
+            <div id="results-container">
+                <div class="profile" id="profile1">
+                    <div class="profile-header">
+                        <div class="zodiac-icon" id="zodiacIcon1"></div>
+                        <div>
+                            <h2 id="name1Display"></h2>
+                            <h3>
+                                <span id="zodiac1"></span>
+                                <span id="element1" class="element-icon"></span>
+                            </h3>
+                        </div>
+                    </div>
+                    
+                    <h4 class="section-title">Personality Traits:</h4>
+                    <ul id="traits1" class="trait-list"></ul>
+                    
+                    <h4 class="section-title">Strengths:</h4>
+                    <ul id="strengths1" class="trait-list"></ul>
+                    
+                    <h4 class="section-title">Weaknesses:</h4>
+                    <ul id="weaknesses1" class="trait-list"></ul>
+                    
+                    <h4 class="section-title">Love Style:</h4>
+                    <p id="loveStyle1"></p>
+                    
+                    <h4 class="section-title">Communication Style:</h4>
+                    <p id="communicationStyle1"></p>
+                    
+                    <h4 class="section-title">Values:</h4>
+                    <p id="values1"></p>
+                    
+                    <h4 class="section-title">Relationship Challenges:</h4>
+                    <p id="challenges1"></p>
+                </div>
+                
+                <div class="profile" id="profile2">
+                    <div class="profile-header">
+                        <div class="zodiac-icon" id="zodiacIcon2"></div>
+                        <div>
+                            <h2 id="name2Display"></h2>
+                            <h3>
+                                <span id="zodiac2"></span>
+                                <span id="element2" class="element-icon"></span>
+                            </h3>
+                        </div>
+                    </div>
+                    
+                    <h4 class="section-title">Personality Traits:</h4>
+                    <ul id="traits2" class="trait-list"></ul>
+                    
+                    <h4 class="section-title">Strengths:</h4>
+                    <ul id="strengths2" class="trait-list"></ul>
+                    
+                    <h4 class="section-title">Weaknesses:</h4>
+                    <ul id="weaknesses2" class="trait-list"></ul>
+                    
+                    <h4 class="section-title">Love Style:</h4>
+                    <p id="loveStyle2"></p>
+                    
+                    <h4 class="section-title">Communication Style:</h4>
+                    <p id="communicationStyle2"></p>
+                    
+                    <h4 class="section-title">Values:</h4>
+                    <p id="values2"></p>
+                    
+                    <h4 class="section-title">Relationship Challenges:</h4>
+                    <p id="challenges2"></p>
+                </div>
+                
+                <div id="compatibility">
+                    <h2>Compatibility Analysis</h2>
+                    <div id="score"></div>
+                    <p id="overallAnalysis"></p>
+                    
+                    <h3 class="section-title">Elemental Harmony</h3>
+                    <p id="elementAnalysis"></p>
+                    
+                    <h3 class="section-title">Modal Compatibility</h3>
+                    <p id="modalityAnalysis"></p>
+                    
+                    <h3 class="section-title">Strengths of Your Pairing</h3>
+                    <ul id="strengths" class="trait-list"></ul>
+                    
+                    <h3 class="section-title">Potential Challenges</h3>
+                    <ul id="challenges" class="trait-list"></ul>
+                    
+                    <h3 class="section-title">Relationship Tips</h3>
+                    <ul id="tips" class="tips-list"></ul>
+                    
+                    <button class="print-button" id="printBtn">
+                        <i class="fas fa-print"></i> Print Analysis
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Set max date to current year
+const currentYear = new Date().getFullYear();
+document.getElementById('date1').max = `${currentYear}-12-31`;
+document.getElementById('date2').max = `${currentYear}-12-31`;
+
+// Zodiac sign determination function
+function getZodiacSign(date) {
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    
+    if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) {
+        return {sign: "Aquarius", element: "air", icon: "fas fa-wind"};
+    } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
+        return {sign: "Pisces", element: "water", icon: "fas fa-water"};
+    } else if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
+        return {sign: "Aries", element: "fire", icon: "fas fa-fire"};
+    } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
+        return {sign: "Taurus", element: "earth", icon: "fas fa-mountain"};
+    } else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) {
+        return {sign: "Gemini", element: "air", icon: "fas fa-wind"};
+    } else if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) {
+        return {sign: "Cancer", element: "water", icon: "fas fa-water"};
+    } else if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) {
+        return {sign: "Leo", element: "fire", icon: "fas fa-fire"};
+    } else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) {
+        return {sign: "Virgo", element: "earth", icon: "fas fa-mountain"};
+    } else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) {
+        return {sign: "Libra", element: "air", icon: "fas fa-wind"};
+    } else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) {
+        return {sign: "Scorpio", element: "water", icon: "fas fa-water"};
+    } else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) {
+        return {sign: "Sagittarius", element: "fire", icon: "fas fa-fire"};
+    } else {
+        return {sign: "Capricorn", element: "earth", icon: "fas fa-mountain"};
+    }
+}
+
+const zodiacData = {
+    "Aries": {
+        element: "fire",
+        modality: "cardinal",
+        traits: [
+            "Aries are energetic and adventurous, always ready to take on new challenges.",
+            "They are courageous and not afraid to take risks.",
+            "Passionate about their pursuits, they throw themselves fully into whatever they do.",
+            "Independent by nature, they value their freedom and autonomy."
+        ],
+        strengths: [
+            "Their leadership skills and confidence make them natural trailblazers.",
+            "They are determined and persistent, rarely giving up on their goals.",
+            "Enthusiastic and optimistic, they inspire others with their positive energy."
+        ],
+        weaknesses: [
+            "Their impatience can lead to hasty decisions and frustration.",
+            "They have a short temper and can be quick to anger.",
+            "Impulsiveness sometimes causes them to act without thinking.",
+            "Their competitive nature can make them overly aggressive or confrontational."
+        ],
+        loveStyle: "Aries are passionate and direct in love. They are not afraid to make the first move and express their feelings openly. They crave excitement and adventure in their relationships and need a partner who can keep up with their energetic pace.",
+        communicationStyle: "They communicate with honesty and directness. While this can be refreshing, it sometimes comes across as blunt or insensitive. They value clear and straightforward communication and appreciate the same in return.",
+        values: "Aries value independence, courage, and authenticity. They admire people who are true to themselves and are not afraid to stand out. They also value action and initiative, preferring to do rather than just talk.",
+        relationshipChallenges: "Their biggest challenge in relationships is balancing their need for independence with the needs of their partner. They can also struggle with impatience and may need to work on being more considerate of their partner's feelings."
+    },
+    "Taurus": {
+        element: "earth",
+        modality: "fixed",
+        traits: [
+            "Taurus are reliable and dependable, always there when you need them.",
+            "They are patient and persistent, willing to work hard for what they want.",
+            "Practical and down-to-earth, they have a strong sense of reality.",
+            "Devoted and loyal, they form deep and lasting bonds."
+        ],
+        strengths: [
+            "Their dependability makes them trustworthy friends and partners.",
+            "They are persistent and will see projects through to completion.",
+            "Loyalty is one of their strongest traits; they stand by their loved ones.",
+            "They provide stability and security in relationships."
+        ],
+        weaknesses: [
+            "Stubbornness can make them inflexible and resistant to change.",
+            "They can be possessive, especially in relationships.",
+            "Uncompromising nature may lead to conflicts.",
+            "Materialistic tendencies can sometimes overshadow other values."
+        ],
+        loveStyle: "Taurus are steady and sensual in love. They seek security and comfort in their relationships and are willing to invest time and effort to build a solid foundation. They express love through physical touch and acts of service.",
+        communicationStyle: "They communicate in a calm and deliberate manner. They prefer actions over words and may take their time to express themselves. When they do speak, it's with thoughtfulness and sincerity.",
+        values: "Taurus value stability, loyalty, and material security. They appreciate the finer things in life and work hard to achieve comfort and luxury. They also value honesty and reliability in others.",
+        relationshipChallenges: "Their stubbornness can be a major challenge in relationships, as they may resist compromise. They also need to be mindful of their possessive tendencies and allow their partners space and freedom."
+    },
+    "Gemini": {
+        element: "air",
+        modality: "mutable",
+        traits: [
+            "Gemini are curious and always eager to learn new things.",
+            "They are adaptable and can easily adjust to new situations.",
+            "Communicative and witty, they are great conversationalists.",
+            "They have a playful and youthful spirit."
+        ],
+        strengths: [
+            "Their versatility allows them to handle multiple tasks and interests.",
+            "Intelligence and quick thinking make them problem solvers.",
+            "Social skills enable them to connect with a wide range of people.",
+            "They are open-minded and willing to consider different perspectives."
+        ],
+        weaknesses: [
+            "Inconsistency can make them seem unreliable.",
+            "They may struggle with nervousness and anxiety.",
+            "Indecisiveness can lead to missed opportunities.",
+            "Superficiality might prevent deep connections."
+        ],
+        loveStyle: "Gemini are playful and intellectual in love. They crave variety and mental stimulation and need a partner who can engage them in lively conversations. They enjoy flirting and may take time to commit.",
+        communicationStyle: "They are expressive and engaging communicators. They love to talk and share ideas, often jumping from one topic to another. They appreciate partners who can keep up with their mental agility.",
+        values: "Gemini value freedom, knowledge, and social connection. They thrive on new experiences and intellectual growth. They also value humor and lightheartedness in their interactions.",
+        relationshipChallenges: "Their inconsistency and need for variety can make it hard for them to settle down. They may also struggle with emotional depth, preferring to keep things light and breezy."
+    },
+    "Cancer": {
+        element: "water",
+        modality: "cardinal",
+        traits: [
+            "Cancer are intuitive and often sense what others are feeling.",
+            "They are emotional and deeply connected to their feelings.",
+            "Protective of their loved ones, they are fiercely loyal.",
+            "Sympathetic and caring, they make great nurturers."
+        ],
+        strengths: [
+            "Their tenacity helps them overcome obstacles.",
+            "Imagination and creativity are strong suits.",
+            "Loyalty is unwavering; they are devoted to family and friends.",
+            "Emotional depth allows for profound connections."
+        ],
+        weaknesses: [
+            "Moodiness can make their emotions unpredictable.",
+            "Insecurity may lead to clinginess or possessiveness.",
+            "They can be manipulative when feeling vulnerable.",
+            "Over-sensitivity might cause them to take things personally."
+        ],
+        loveStyle: "Cancer are nurturing and emotional in love. They seek deep, meaningful connections and are willing to invest heavily in their relationships. They need a partner who can provide security and understand their emotional needs.",
+        communicationStyle: "They communicate gently and indirectly, often led by their feelings. They may hint at what they want rather than stating it outright. They appreciate partners who are attentive and empathetic.",
+        values: "Cancer value family, emotional security, and empathy. They cherish their home and loved ones and strive to create a safe and comforting environment. They also value tradition and sentimental memories.",
+        relationshipChallenges: "Their moodiness and tendency to hold onto the past can be challenging. They may also struggle with setting boundaries and can become overly dependent on their partners."
+    },
+    "Leo": {
+        element: "fire",
+        modality: "fixed",
+        traits: [
+            "Leo are creative and love to express themselves artistically.",
+            "They are passionate and bring warmth and enthusiasm to everything they do.",
+            "Generous and kind-hearted, they enjoy making others happy.",
+            "They have a natural charisma that draws people to them."
+        ],
+        strengths: [
+            "Their confidence makes them stand out in any crowd.",
+            "Ambition drives them to achieve great things.",
+            "Loyalty to friends and partners is unwavering.",
+            "Optimism helps them see the bright side of life."
+        ],
+        weaknesses: [
+            "Arrogance can sometimes overshadow their good qualities.",
+            "Stubbornness makes it hard for them to admit when they're wrong.",
+            "They can be self-centered, focusing too much on their own needs.",
+            "Their desire to lead can come across as domineering."
+        ],
+        loveStyle: "Leo are bold and generous in love. They desire admiration and passion and are willing to shower their partner with affection and gifts. They need a partner who appreciates their grand gestures and can match their enthusiasm.",
+        communicationStyle: "They communicate with drama and confidence. They love to be heard and often use storytelling to make their point. They appreciate partners who listen attentively and respond with equal passion.",
+        values: "Leo value recognition, loyalty, and self-expression. They admire people who are confident and authentic. They also value creativity and the arts.",
+        relationshipChallenges: "Their need for attention can be overwhelming for some partners. They may also struggle with sharing the spotlight and need to balance their desire for recognition with their partner's needs."
+    },
+    "Virgo": {
+        element: "earth",
+        modality: "mutable",
+        traits: [
+            "Virgo are analytical and detail-oriented, always striving for perfection.",
+            "They are practical and grounded, preferring logic over emotion.",
+            "Diligent and hardworking, they take their responsibilities seriously.",
+            "They are kind and helpful, often putting others' needs before their own."
+        ],
+        strengths: [
+            "Their attention to detail ensures that nothing is overlooked.",
+            "Intelligence and practicality make them excellent problem solvers.",
+            "Reliability is a hallmark; they are always there when needed.",
+            "They are supportive and nurturing."
+        ],
+        weaknesses: [
+            "Overthinking can lead to unnecessary worry and stress.",
+            "They can be overly critical, both of themselves and others.",
+            "Shyness may prevent them from expressing their true feelings.",
+            "Perfectionism can make them overly focused on flaws."
+        ],
+        loveStyle: "Virgo are thoughtful and supportive in love. They show their affection through acts of service and by being there for their partner. They value trust and reliability and need a partner who appreciates their efforts.",
+        communicationStyle: "They communicate with precision and clarity. They prefer to think before they speak and value logical discussions. They appreciate partners who are patient and understanding.",
+        values: "Virgo value order, reliability, and helpfulness. They admire people who are disciplined and hardworking. They also value health and well-being.",
+        relationshipChallenges: "Their tendency to be overly critical can strain relationships. They may also struggle with expressing their emotions, preferring actions over words."
+    },
+    "Libra": {
+        element: "air",
+        modality: "cardinal",
+        traits: [
+            "Libra are diplomatic and fair-minded, always seeking balance.",
+            "They are social and charming, easily making friends.",
+            "Cooperative and team-oriented, they work well in partnerships.",
+            "They have a strong sense of justice and strive for harmony."
+        ],
+        strengths: [
+            "Their ability to see both sides makes them excellent mediators.",
+            "Charm and grace help them navigate social situations.",
+            "Idealism drives them to create a better world.",
+            "They are partnership-oriented and value relationships."
+        ],
+        weaknesses: [
+            "Indecisiveness can make it hard for them to make choices.",
+            "They avoid confrontation, sometimes at the cost of their own needs.",
+            "Self-pity may arise when they feel unappreciated.",
+            "They can hold grudges if they feel wronged."
+        ],
+        loveStyle: "Libra are romantic and harmonious in love. They seek balance and beauty in their relationships and are willing to compromise to maintain peace. They need a partner who values equality and respect.",
+        communicationStyle: "They communicate with charm and tact. They aim to please and often use diplomacy to avoid conflict. They appreciate partners who are good listeners.",
+        values: "Libra value harmony, fairness, and relationships. They admire people who are kind and considerate. They also value beauty and aesthetics.",
+        relationshipChallenges: "Their indecisiveness can frustrate partners. They may also struggle with avoiding conflict, leading to unresolved issues."
+    },
+    "Scorpio": {
+        element: "water",
+        modality: "fixed",
+        traits: [
+            "Scorpio are passionate and intense, bringing depth to everything they do.",
+            "They are determined and resourceful, never giving up easily.",
+            "Brave and courageous, they face challenges head-on.",
+            "They are loyal and protective of those they care about."
+        ],
+        strengths: [
+            "Their loyalty is unwavering; they stand by their loved ones.",
+            "Courage and resilience help them overcome obstacles.",
+            "Passion drives them to achieve their goals.",
+            "Resourcefulness makes them excellent problem solvers."
+        ],
+        weaknesses: [
+            "Jealousy can be a significant issue in relationships.",
+            "They can be secretive, often hiding their true feelings.",
+            "Resentment may build if they feel betrayed.",
+            "Their need for control can be overwhelming."
+        ],
+        loveStyle: "Scorpio are intense and loyal in love. They crave deep emotional connections and are willing to invest fully in their relationships. They need a partner who can handle their intensity.",
+        communicationStyle: "They communicate with depth and intensity. They often probe beneath the surface and value honesty. They appreciate partners who are open and willing to share.",
+        values: "Scorpio value trust, power, and emotional intensity. They admire people who are authentic and fearless. They also value privacy.",
+        relationshipChallenges: "Their jealousy and need for control can strain relationships. They may also struggle with letting go of past hurts."
+    },
+    "Sagittarius": {
+        element: "fire",
+        modality: "mutable",
+        traits: [
+            "Sagittarius are generous and always willing to help others.",
+            "They are idealistic and strive for a better world.",
+            "Humorous and fun-loving, they bring joy to those around them.",
+            "Adventurous by nature, they love exploring new places and ideas."
+        ],
+        strengths: [
+            "Their optimism helps them see the best in every situation.",
+            "Honesty is a core value; they are straightforward and sincere.",
+            "Fairness and justice are important to them.",
+            "Enthusiasm makes them inspiring and motivating."
+        ],
+        weaknesses: [
+            "Impatience can lead to frustration with slower-paced individuals.",
+            "They may promise more than they can deliver.",
+            "Tactlessness can sometimes hurt others' feelings.",
+            "Restlessness makes it hard for them to stay in one place."
+        ],
+        loveStyle: "Sagittarius are free-spirited and fun in love. They need adventure and growth in their relationships and value freedom. They need a partner who understands their need for space.",
+        communicationStyle: "They communicate with openness and bluntness. They value honesty over tact and appreciate partners who can handle their straightforward approach.",
+        values: "Sagittarius value freedom, exploration, and truth. They admire people who are adventurous and open-minded. They also value learning and personal growth.",
+        relationshipChallenges: "Their restlessness and need for freedom can make commitment difficult. They may also struggle with tact, sometimes hurting their partner's feelings."
+    },
+    "Capricorn": {
+        element: "earth",
+        modality: "cardinal",
+        traits: [
+            "Capricorn are responsible and take their duties seriously.",
+            "They are disciplined and self-controlled, often setting high standards.",
+            "Good managers, they excel in leadership roles.",
+            "They are practical and grounded, preferring facts over fantasy."
+        ],
+        strengths: [
+            "Their sense of responsibility makes them reliable and trustworthy.",
+            "Patience helps them achieve long-term goals.",
+            "Ambition drives them to succeed.",
+            "Practicality ensures sound decisions."
+        ],
+        weaknesses: [
+            "They can come across as know-it-alls, dismissing others' opinions.",
+            "Unforgiving nature may lead to holding grudges.",
+            "Pessimism can make them expect the worst.",
+            "They may focus too much on work, neglecting relationships."
+        ],
+        loveStyle: "Capricorn are serious and committed in love. They value structure and loyalty and are willing to work hard to maintain their relationships. They need a partner who appreciates their dedication.",
+        communicationStyle: "They communicate directly and pragmatically. They focus on goals and solutions and appreciate straightforward partners. They may struggle with expressing emotions.",
+        values: "Capricorn value duty, achievement, and stability. They admire people who are hardworking and disciplined. They also value tradition.",
+        relationshipChallenges: "Their emotional reserve can make it hard for partners to connect deeply. They may also prioritize work over relationships."
+    },
+    "Aquarius": {
+        element: "air",
+        modality: "fixed",
+        traits: [
+            "Aquarius are progressive and forward-thinking, always looking to the future.",
+            "They are original and creative, often coming up with unique ideas.",
+            "Independent by nature, they value their freedom and autonomy.",
+            "Humanitarian at heart, they care deeply about social causes."
+        ],
+        strengths: [
+            "Their vision helps them see possibilities others might miss.",
+            "Innovation and creativity make them excellent problem solvers.",
+            "Objectivity allows them to remain impartial and fair.",
+            "Idealism drives them to make the world a better place."
+        ],
+        weaknesses: [
+            "Detachment can make them seem aloof or uncaring.",
+            "Stubbornness may prevent them from considering other viewpoints.",
+            "Unpredictability can be challenging for partners who crave stability.",
+            "Aloofness might create distance in relationships."
+        ],
+        loveStyle: "Aquarius are unconventional and intellectual in love. They need freedom and space and are attracted to independent partners. They value mental connection and shared ideals.",
+        communicationStyle: "They communicate with quirkiness and detachment. They value ideas over emotions and appreciate intellectual discussions.",
+        values: "Aquarius value independence, progress, and community. They admire people who are unique and forward-thinking. They also value friendship.",
+        relationshipChallenges: "Their emotional distance can make connection difficult. They may also struggle with commitment, preferring flexibility."
+    },
+    "Pisces": {
+        element: "water",
+        modality: "mutable",
+        traits: [
+            "Pisces are compassionate and empathetic, often putting others' needs first.",
+            "They are artistic and creative, with a strong imagination.",
+            "Intuitive and sensitive, they pick up on subtle cues.",
+            "Gentle and kind, they avoid conflict whenever possible."
+        ],
+        strengths: [
+            "Their empathy makes them excellent listeners and supporters.",
+            "Creativity allows them to express themselves uniquely.",
+            "Intuition helps them understand others deeply.",
+            "Kindness and generosity make them beloved."
+        ],
+        weaknesses: [
+            "Escapism can lead them to avoid reality or difficult situations.",
+            "They may be overly trusting, sometimes to their detriment.",
+            "Fearfulness might prevent them from taking risks.",
+            "A victim mentality can make them feel powerless."
+        ],
+        loveStyle: "Pisces are dreamy and selfless in love. They seek soulful connections and are willing to sacrifice for their partner. They need a partner who can ground them.",
+        communicationStyle: "They communicate softly and empathetically. They often use indirect language and appreciate partners who can read between the lines.",
+        values: "Pisces value compassion, creativity, and spirituality. They admire kind and understanding people. They also value dreams and imagination.",
+        relationshipChallenges: "Their tendency to escape reality can complicate practical matters. They may also struggle with boundaries, giving too much of themselves."
+    }
+};
+
+// Element compatibility details
+const elementCompatibilityDetails = {
+    "fire-fire": {
+        description: "A passionate and dynamic combination. You both bring energy and enthusiasm to the relationship, creating an exciting and adventurous partnership.",
+        strengths: ["High energy", "Shared enthusiasm", "Mutual understanding of independence"],
+        challenges: ["Potential for conflict due to strong personalities", "Risk of burning out", "Competition"],
+        tips: ["Channel energy into shared goals", "Practice taking turns in the spotlight", "Cool down together"]
+    },
+    "fire-air": {
+        description: "An exhilarating and stimulating pairing. Fire's passion fuels air's ideas, creating a relationship full of excitement and intellectual connection.",
+        strengths: ["Creative synergy", "Shared love for adventure", "Excellent communication"],
+        challenges: ["Air may find fire too intense", "Fire may find air detached", "Misunderstandings"],
+        tips: ["Balance action with discussion", "Respect space and connection needs", "Learn from differences"]
+    },
+    "fire-earth": {
+        description: "A challenging yet grounding combination. Fire brings excitement, while earth offers stability, requiring balance to thrive.",
+        strengths: ["Complementary energy", "Earth grounds fire", "Fire inspires earth"],
+        challenges: ["Fire may feel restricted", "Earth may find fire reckless", "Pace differences"],
+        tips: ["Appreciate stability and spontaneity", "Find common goals", "Be patient with styles"]
+    },
+    "fire-water": {
+        description: "A complex pairing of passion and emotion. Fire's intensity can overwhelm water, while water may dampen fire, needing careful balance.",
+        strengths: ["Emotional growth", "Passionate connection", "Mutual learning"],
+        challenges: ["Fire overwhelms water", "Water extinguishes fire", "Emotional clashes"],
+        tips: ["Balance intensity with sensitivity", "Give space for feelings", "Find emotional harmony"]
+    },
+    "earth-earth": {
+        description: "A solid and dependable pairing. You both value stability and practicality, building a strong, lasting foundation together.",
+        strengths: ["Mutual reliability", "Shared goals", "Strong trust"],
+        challenges: ["Risk of stagnation", "Resistance to change", "Lack of spontaneity"],
+        tips: ["Introduce variety gently", "Celebrate your stability", "Support growth"]
+    },
+    "earth-air": {
+        description: "A blend of practicality and ideas. Earth provides structure, while air brings innovation, needing effort to align.",
+        strengths: ["Balanced perspectives", "Air inspires earth", "Earth grounds air"],
+        challenges: ["Earth may find air impractical", "Air may feel confined", "Decision-making clashes"],
+        tips: ["Blend ideas with action", "Respect differing speeds", "Collaborate creatively"]
+    },
+    "earth-water": {
+        description: "A nurturing and stable combination. Earth offers security, and water brings emotional depth, creating a supportive bond.",
+        strengths: ["Emotional stability", "Mutual care", "Strong foundation"],
+        challenges: ["Earth may seem cold", "Water may overwhelm", "Emotional expression"],
+        tips: ["Open up emotionally", "Build trust slowly", "Value each other’s strengths"]
+    },
+    "air-air": {
+        description: "A light and intellectual pairing. You both thrive on ideas and freedom, creating a mentally stimulating relationship.",
+        strengths: ["Great communication", "Shared curiosity", "Independence"],
+        challenges: ["Lack of emotional depth", "Indecision", "Detachment"],
+        tips: ["Deepen emotional bonds", "Make decisions together", "Stay connected"]
+    },
+    "air-water": {
+        description: "A mix of intellect and emotion. Air brings perspective, and water adds depth, requiring understanding to harmonize.",
+        strengths: ["Intellectual-emotional balance", "Creative potential", "Unique insights"],
+        challenges: ["Air’s detachment vs. water’s sensitivity", "Communication gaps", "Emotional needs"],
+        tips: ["Bridge emotions with logic", "Give time to process", "Value both strengths"]
+    },
+    "water-water": {
+        description: "A deeply emotional and intuitive pairing. You both connect on a profound level, sharing empathy and understanding.",
+        strengths: ["Emotional harmony", "Deep empathy", "Intuitive bond"],
+        challenges: ["Overwhelming emotions", "Lack of practicality", "Boundary issues"],
+        tips: ["Set healthy boundaries", "Ground your emotions", "Support each other gently"]
+    }
+};
+
+// Updated calculateCompatibility function to return a random score between 1 and 100
+function calculateCompatibility() {
+    return Math.floor(Math.random() * 100) + 1;
+}
+
+// Generate detailed compatibility report
+function generateCompatibilityReport(sign1, sign2) {
+    const zodiac1 = zodiacData[sign1];
+    const zodiac2 = zodiacData[sign2];
+    const element1 = zodiac1.element;
+    const element2 = zodiac2.element;
+    const modality1 = zodiac1.modality;
+    const modality2 = zodiac2.modality;
+    
+    const score = calculateCompatibility();
+    
+    let overallAnalysis;
+    if (score >= 90) {
+        overallAnalysis = `An extraordinary cosmic connection! ${sign1} and ${sign2} naturally complement each other in many ways, creating a vibrant and fulfilling partnership.`;
+    } else if (score >= 75) {
+        overallAnalysis = `A strong compatibility with great potential! ${sign1} and ${sign2} share a natural harmony that can lead to a lasting and joyful relationship.`;
+    } else if (score >= 60) {
+        overallAnalysis = `A moderate compatibility with promise. ${sign1} and ${sign2} have differences that can enrich your bond with effort and understanding.`;
+    } else if (score >= 40) {
+        overallAnalysis = `${sign1} and ${sign2} face some challenges. Your unique traits require work to align, but this can lead to growth and balance.`;
+    } else {
+        overallAnalysis = `A complex pairing for ${sign1} and ${sign2}. Significant effort and compromise can turn your differences into strengths.`;
+    }
+    
+    const elementKey = element1 === element2 ? `${element1}-${element2}` : [element1, element2].sort().join("-");
+    const elementDetails = elementCompatibilityDetails[elementKey] || elementCompatibilityDetails[`${element2}-${element1}`];
+    
+    let modalityAnalysis;
+    if (modality1 === modality2) {
+        modalityAnalysis = `Both ${modality1} signs, you share a similar approach to action and change. This can lead to harmony but also potential conflicts in ${modality1 === 'cardinal' ? 'leadership' : modality1 === 'fixed' ? 'stubbornness' : 'indecision'}.`;
+    } else {
+        modalityAnalysis = `With different modalities (${modality1} and ${modality2}), you bring complementary energies. ${modality1.charAt(0).toUpperCase() + modality1.slice(1)} ${sign1} initiates, while ${modality2} ${sign2} ${modality2 === 'fixed' ? 'stabilizes' : 'adapts'}.`;
+    }
+    
+    return {
+        score,
+        overallAnalysis,
+        elementAnalysis: elementDetails.description,
+        modalityAnalysis,
+        strengths: elementDetails.strengths,
+        challenges: elementDetails.challenges,
+        tips: elementDetails.tips
+    };
+}
+
+// Form submission handler with age validation
+document.getElementById('compatibilityForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    const name1 = document.getElementById('name1').value.trim();
+    const date1Input = document.getElementById('date1').value;
+    const name2 = document.getElementById('name2').value.trim();
+    const date2Input = document.getElementById('date2').value;
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const results = document.getElementById('results');
+    const button = document.getElementById('analyzeBtn');
+    
+    if (!name1 || !date1Input || !name2 || !date2Input) {
+        error.textContent = 'Please fill in all fields.';
+        error.style.display = 'block';
+        return;
+    }
+    
+    const date1 = new Date(date1Input);
+    const date2 = new Date(date2Input);
+    
+    const today = new Date();
+    const minAge = 18;
+    const date1Age = (today - date1) / (1000 * 60 * 60 * 24 * 365.25);
+    const date2Age = (today - date2) / (1000 * 60 * 60 * 24 * 365.25);
+    
+    if (date1Age < minAge || date2Age < minAge) {
+        error.textContent = 'Both individuals must be at least 18 years old.';
+        error.style.display = 'block';
+        return;
+    }
+    
+    try {
+        button.disabled = true;
+        loading.style.display = 'block';
+        results.classList.remove('show');
+        error.style.display = 'none';
+        
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        const zodiac1 = getZodiacSign(date1);
+        const zodiac2 = getZodiacSign(date2);
+        
+        const report = generateCompatibilityReport(zodiac1.sign, zodiac2.sign);
+        
+        // Update Person 1 Profile
+        document.getElementById('name1Display').textContent = name1;
+        document.getElementById('zodiac1').textContent = zodiac1.sign;
+        document.getElementById('zodiacIcon1').innerHTML = `<i class="${zodiac1.icon}"></i>`;
+        document.getElementById('element1').textContent = zodiac1.element;
+        document.getElementById('element1').className = `element-icon ${zodiac1.element}`;
+        document.getElementById('traits1').innerHTML = zodiacData[zodiac1.sign].traits.map(trait => `<li>${trait}</li>`).join('');
+        document.getElementById('strengths1').innerHTML = zodiacData[zodiac1.sign].strengths.map(str => `<li>${str}</li>`).join('');
+        document.getElementById('weaknesses1').innerHTML = zodiacData[zodiac1.sign].weaknesses.map(weak => `<li>${weak}</li>`).join('');
+        document.getElementById('loveStyle1').textContent = zodiacData[zodiac1.sign].loveStyle;
+        document.getElementById('communicationStyle1').textContent = zodiacData[zodiac1.sign].communicationStyle;
+        document.getElementById('values1').textContent = zodiacData[zodiac1.sign].values;
+        document.getElementById('challenges1').textContent = zodiacData[zodiac1.sign].relationshipChallenges;
+        
+        // Update Person 2 Profile
+        document.getElementById('name2Display').textContent = name2;
+        document.getElementById('zodiac2').textContent = zodiac2.sign;
+        document.getElementById('zodiacIcon2').innerHTML = `<i class="${zodiac2.icon}"></i>`;
+        document.getElementById('element2').textContent = zodiac2.element;
+        document.getElementById('element2').className = `element-icon ${zodiac2.element}`;
+        document.getElementById('traits2').innerHTML = zodiacData[zodiac2.sign].traits.map(trait => `<li>${trait}</li>`).join('');
+        document.getElementById('strengths2').innerHTML = zodiacData[zodiac2.sign].strengths.map(str => `<li>${str}</li>`).join('');
+        document.getElementById('weaknesses2').innerHTML = zodiacData[zodiac2.sign].weaknesses.map(weak => `<li>${weak}</li>`).join('');
+        document.getElementById('loveStyle2').textContent = zodiacData[zodiac2.sign].loveStyle;
+        document.getElementById('communicationStyle2').textContent = zodiacData[zodiac2.sign].communicationStyle;
+        document.getElementById('values2').textContent = zodiacData[zodiac2.sign].values;
+        document.getElementById('challenges2').textContent = zodiacData[zodiac2.sign].relationshipChallenges;
+        
+        // Update Compatibility Analysis
+        document.getElementById('score').textContent = `${report.score}%`;
+        document.getElementById('overallAnalysis').textContent = report.overallAnalysis;
+        document.getElementById('elementAnalysis').textContent = report.elementAnalysis;
+        document.getElementById('modalityAnalysis').textContent = report.modalityAnalysis;
+        document.getElementById('strengths').innerHTML = report.strengths.map(str => `<li>${str}</li>`).join('');
+        document.getElementById('challenges').innerHTML = report.challenges.map(chal => `<li>${chal}</li>`).join('');
+        document.getElementById('tips').innerHTML = report.tips.map(tip => `<li>${tip}</li>`).join('');
+        
+        results.classList.add('show');
+    } catch (err) {
+        error.textContent = 'Unable to generate analysis. Please try again.';
+        error.style.display = 'block';
+        console.error(err);
+    } finally {
+        button.disabled = false;
+        loading.style.display = 'none';
+    }
+});
+
+// Reset button functionality
+document.getElementById('resetBtn').addEventListener('click', function() {
+    document.getElementById('compatibilityForm').reset();
+    document.getElementById('results').classList.remove('show');
+    document.getElementById('error').style.display = 'none';
+});
+
+// Print functionality
+document.getElementById('printBtn').addEventListener('click', function() {
+    window.print();
+});
+
+// Set default min and max dates
+document.getElementById('date1').min = "1900-01-01";
+document.getElementById('date2').min = "1900-01-01";
+const today = new Date();
+const todayFormatted = today.toISOString().split('T')[0];
+document.getElementById('date1').max = todayFormatted;
+document.getElementById('date2').max = todayFormatted;
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'934cdc01efbf8577',t:'MTc0NTQwNjA0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+</html>
